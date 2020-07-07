@@ -10,7 +10,6 @@ var apuesta_inicial = 0.00000001;
 
 var victorias = 0; //contador de victorias
 var mayor_derrota=0; //registra el numero mayor de derrotas antes de una victoria
-var mayor_derrota_contador=0; //cuenta el numero de veces que llega se alcanza el numero max
 var jhg=1; // jugadas antes de ganar.
 const jhg_arr = [];
 var jhg_arr_rep = [];
@@ -66,7 +65,7 @@ function Roll_HiLo_Dice_a_mod() {
                     $('#roll-number-auto').addClass('green').removeClass('red');
                     monto(3); // 3 retorna al valor minimo
                     victorias++;
-                    if(victorias==limite || jhg==derrotas_permitidas){                        
+                    if(victorias==limite || jhg==derrotas_permitidas){                     
                         /*se dentiene si alcanza el limite
                         o si las jugadas antes de ganar igualan las derrotas permitidas, dado que
                         proximamente las jhg superaran ese limite y se generaran perdidas.
@@ -87,14 +86,14 @@ function Roll_HiLo_Dice_a_mod() {
                     jhg=1;
                 } else {
                     jhg++;
-                    monto(2);
                     if(jhg > mayor_derrota){
                         mayor_derrota=jhg;
                     }
                     if(jhg>=derrotas_permitidas){
-                        mayor_derrota_contador++;
                         //console.log("numero critico de derrotas alcanzado, retorno al valor seguro");
                         monto(1);
+                    }else{
+                        monto(2);
                     }
                     $('#roll-number-auto').addClass('red').removeClass('green');                    
                 }
