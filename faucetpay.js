@@ -7,12 +7,13 @@ console.time('tiempo_en_ejecucion');
 var derrotas_permitidas=26;
 var limite=1; //cantidad de victorias maxima
 var apuesta_inicial = 0.00000001;
-var logs = false;
 
 var victorias = 0; //contador de victorias
 var mayor_derrota=0; //registra el numero mayor de derrotas antes de una victoria
 var mayor_derrota_contador=0; //cuenta el numero de veces que llega se alcanza el numero max
 var jhg=1; // jugadas antes de ganar.
+const jhg_arr = [];
+var jhg_arr_rep = [];
 
 clear(); 
 
@@ -62,13 +63,9 @@ function Roll_HiLo_Dice_a_mod() {
                 parar();
             } else {
                 if (obj.win == 1) {
-                    //console.clear();
                     $('#roll-number-auto').addClass('green').removeClass('red');
-                    monto(3);
+                    monto(3); // 3 retorna al valor minimo
                     victorias++;
-                    if (logs) {
-                        console.log("0"+jhg+" B="+ obj.balance);                        
-                    }
                     if(victorias==limite || jhg==derrotas_permitidas){                        
                         /*se dentiene si alcanza el limite
                         o si las jugadas antes de ganar igualan las derrotas permitidas, dado que
@@ -80,6 +77,12 @@ function Roll_HiLo_Dice_a_mod() {
                             console.log('final esperado');
                         }
                         parar();
+                    }
+                    if(jhg_arr.indexOf(jhg) == -1){
+                        jhg_arr.push(jhg); // add a new element (r) to jhg_arr
+                        jhg_arr_rep.push(1);
+                    }else{
+                        jhg_arr_rep[jhg_arr.indexOf(jhg)] = jhg_arr_rep[jhg_arr.indexOf(jhg)]+1;
                     }
                     jhg=1;
                 } else {
@@ -375,6 +378,16 @@ function setAmount(id, auto = false) {
 }
  
 function parar() {
+    var nJ =0;
+    for (var i = 0; i < jhg_arr.length; i++) {
+        if (jhg_arr[i] < 10) {
+            console.log('0'+jhg_arr[i]+' -- '+jhg_arr_rep[i]);
+        } else {
+            console.log(jhg_arr[i]+' -- '+jhg_arr_rep[i]);            
+        }
+        nJ = nJ+jhg_arr_rep[i];
+    }
+    console.log('numero de jugadas '+nJ);
     console.timeEnd("tiempo_en_ejecucion");
     Stop_HiLO_Dice_a();
 }
