@@ -4,9 +4,9 @@ poner payout en 2
 
 console.time('tiempo_en_ejecucion');
 
-var derrotas_permitidas=30;
+var derrotas_permitidas=28;
 var limite=1; //cantidad de victorias maxima
-var apuesta_inicial = 0.0000001;
+var apuesta_inicial = 0.00000001;
 
 var victorias = 0; //contador de victorias
 var mayor_derrota=0; //registra el numero mayor de derrotas antes de una victoria
@@ -14,6 +14,8 @@ var jhg=1; // jugadas antes de ganar.
 var jhg_arr = [];
 var jhg_arr_rep = [];
 var tamanio=0;
+
+var bloqueo = 10;
 clear(); 
 
 Roll_HiLo_Dice_a_mod();
@@ -89,16 +91,20 @@ function Roll_HiLo_Dice_a_mod() {
                     }
                     jhg=1;
                 } else {
+                    if (jhg<= bloqueo) {
+                        // aqui no pasa nada, se mira feo pero funciona
+                    } else {
+                        if(jhg>derrotas_permitidas){
+                            //console.log("numero critico de derrotas alcanzado, retorno al valor seguro");
+                            monto(1);
+                        }else{
+                            monto(2);
+                        }
+                    }
                     jhg++;
                     if(jhg > mayor_derrota){
                         mayor_derrota=jhg;
-                    }
-                    if(jhg>derrotas_permitidas){
-                        //console.log("numero critico de derrotas alcanzado, retorno al valor seguro");
-                        monto(1);
-                    }else{
-                        monto(2);
-                    }
+                    }                    
                     $('#roll-number-auto').addClass('red').removeClass('green');                    
                 }
                 //$('#roll-number-auto').html(obj.roll);
