@@ -4,7 +4,7 @@ poner payout en 2
 
 console.time('tiempo_en_ejecucion');
 
-var derrotas_permitidas=28;
+var derrotas_permitidas=31;
 var limite=1; //cantidad de victorias maxima
 var apuesta_inicial = 0.00000001;
 
@@ -15,7 +15,7 @@ var jhg_arr = [];
 var jhg_arr_rep = [];
 var tamanio=0;
 
-var bloqueo = 10;
+var bloqueo = 6;
 clear(); 
 
 Roll_HiLo_Dice_a_mod();
