@@ -8,6 +8,7 @@ var derrotas_permitidas=31;
 var limite=1; //cantidad de victorias maxima
 var apuesta_inicial = 0.00000001;
 
+var tasa_refresco=50;
 var victorias = 0; //contador de victorias
 var mayor_derrota=0; //registra el numero mayor de derrotas antes de una victoria
 var jhg=1; // jugadas antes de ganar.
@@ -67,9 +68,6 @@ function Roll_HiLo_Dice_a_mod() {
                     $('#roll-number-auto').addClass('green').removeClass('red');
                     monto(3); // 3 retorna al valor minimo
                     victorias++;
-                    if (victorias%100==0) {
-                        imprimir();
-                    }
                     if(victorias==limite || jhg==derrotas_permitidas){                     
                         /*se dentiene si alcanza el limite
                         o si las jugadas antes de ganar igualan las derrotas permitidas, dado que
@@ -113,6 +111,9 @@ function Roll_HiLo_Dice_a_mod() {
                     $('#roll-number-auto').html("¡LISTO!");                    
                 }else{
                     $('#roll-number-auto').html(count+">#"+mayor_derrota+"("+victorias+")");
+                }
+                if (jhg%tasa_refresco==0) {
+                    imprimir();
                 }
                 $("h4[class='text-center tx-roboto tx-semibold']").html("J"+count+"V"+victorias+">#d"+mayor_derrota);
 
