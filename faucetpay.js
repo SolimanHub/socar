@@ -8,7 +8,7 @@ var derrotas_permitidas=31;
 var limite=1; //cantidad de victorias maxima
 var apuesta_inicial = 0.00000001;
 
-var tasa_refresco=50;
+var tasa_refresco=50; //actualiza el log de datos cada n jugadas
 var victorias = 0; //contador de victorias
 var mayor_derrota=0; //registra el numero mayor de derrotas antes de una victoria
 var jhg=1; // jugadas antes de ganar.
@@ -17,7 +17,7 @@ var jhg_arr_rep = [];
 var tamanio=0;
 
 var bloqueo = 6;
-clear(); 
+clear();
 
 Roll_HiLo_Dice_a_mod();
 
@@ -68,7 +68,7 @@ function Roll_HiLo_Dice_a_mod() {
                     $('#roll-number-auto').addClass('green').removeClass('red');
                     monto(3); // 3 retorna al valor minimo
                     victorias++;
-                    if(victorias==limite || jhg==derrotas_permitidas){                     
+                    if(victorias==limite || jhg==derrotas_permitidas){
                         /*se dentiene si alcanza el limite
                         o si las jugadas antes de ganar igualan las derrotas permitidas, dado que
                         proximamente las jhg superaran ese limite y se generaran perdidas.
@@ -102,13 +102,13 @@ function Roll_HiLo_Dice_a_mod() {
                     jhg++;
                     if(jhg > mayor_derrota){
                         mayor_derrota=jhg;
-                    }                    
-                    $('#roll-number-auto').addClass('red').removeClass('green');                    
+                    }
+                    $('#roll-number-auto').addClass('red').removeClass('green');
                 }
                 //$('#roll-number-auto').html(obj.roll);
 
                 if(victorias==limite){
-                    $('#roll-number-auto').html("¡LISTO!");                    
+                    $('#roll-number-auto').html("¡LISTO!");
                 }else{
                     $('#roll-number-auto').html(count+">#"+mayor_derrota+"("+victorias+")");
                 }
@@ -141,7 +141,7 @@ function Roll_HiLo_Dice_a_mod() {
         count++;
     }
     performBet_mod();
-} // fin funcion roll_hilo_dice 
+} // fin funcion roll_hilo_dice
 
 function Dice_CalculateAmounts(id, auto = false) {
 
@@ -386,8 +386,8 @@ function setAmount(id, auto = false) {
     Dice_CalculateAmounts(1);
 
 }
- 
-function parar() {    
+
+function parar() {
     imprimir();
     console.timeEnd("tiempo_en_ejecucion");
     Stop_HiLO_Dice_a();
@@ -395,7 +395,7 @@ function parar() {
 
 function monto(id) {
     setAmount(id,true); // apuesta minima
-    Dice_CalculateAmounts(1, true); // actualiza el profit    
+    Dice_CalculateAmounts(1, true); // actualiza el profit
 }
 
 function imprimir() {
@@ -405,7 +405,7 @@ function imprimir() {
         if (jhg_arr[i] < 10) {
             console.log('0'+jhg_arr[i]+' -- '+jhg_arr_rep[i]);
         } else {
-            console.log(jhg_arr[i]+' -- '+jhg_arr_rep[i]);            
+            console.log(jhg_arr[i]+' -- '+jhg_arr_rep[i]);
         }
         nJ = nJ+jhg_arr_rep[i];
     }
