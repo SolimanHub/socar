@@ -1,12 +1,12 @@
 /*
-poner payout en 2
+Agregar orden en los arreglos de datos
 */
 
 console.time('tiempo_en_ejecucion');
 
-var derrotas_permitidas=31;
-var limite=1; //cantidad de victorias maxima
-var apuesta_inicial = 0.00000001;
+var derrotas_permitidas=30;
+var limite=20000; //cantidad de victorias maxima
+var apuesta_inicial = 0.00000100; // 0.00000100 000004
 
 var tasa_refresco=50; //actualiza el log de datos cada n jugadas
 var victorias = 0; //contador de victorias
@@ -65,7 +65,7 @@ function Roll_HiLo_Dice_a_mod() {
                 parar();
             } else {
                 if (obj.win == 1) {
-                    $('#roll-number-auto').addClass('green').removeClass('red');
+                    $('#roll-number-auto').addClass('green').removeClass('black');
                     monto(3); // 3 retorna al valor minimo
                     victorias++;
                     if(victorias==limite || jhg==derrotas_permitidas){
@@ -103,19 +103,19 @@ function Roll_HiLo_Dice_a_mod() {
                     if(jhg > mayor_derrota){
                         mayor_derrota=jhg;
                     }
-                    $('#roll-number-auto').addClass('red').removeClass('green');
+                    $('#roll-number-auto').addClass('black').removeClass('green');
                 }
                 //$('#roll-number-auto').html(obj.roll);
 
                 if(victorias==limite){
                     $('#roll-number-auto').html("¡LISTO!");
                 }else{
-                    $('#roll-number-auto').html(count+">#"+mayor_derrota+"("+victorias+")");
+                    $('#roll-number-auto').html(jhg+">#"+mayor_derrota+"("+victorias+")");
                 }
-                if (jhg%tasa_refresco==0) {
+                if (count%tasa_refresco==0) {
                     imprimir();
                 }
-                $("h4[class='text-center tx-roboto tx-semibold']").html("J"+count+"V"+victorias+">#d"+mayor_derrota);
+                $("h4[class='text-center tx-roboto tx-semibold']").html("J"+count+"(V"+victorias+")>#d"+mayor_derrota);
 
                 $("input[name='server_seed_hash']").val(obj.server_seed_hash);
 
@@ -401,6 +401,25 @@ function monto(id) {
 function imprimir() {
     console.clear();
     var nJ =0;
+    var orden =0;
+    while(orden<tamanio){
+        orden++;
+        for(var i=0;i<tamanio;i++){
+            var temp=0;
+            var j=i+1;
+            if(i<tamanio-1){
+                if(jhg_arr[j]<jhg_arr[i]){
+                    temp=jhg_arr[i];
+                    jhg_arr[i]=jhg_arr[j];
+                    jhg_arr[j]=temp;
+
+                    temp=jhg_arr_rep[i];
+                    jhg_arr_rep[i]=jhg_arr_rep[j];
+                    jhg_arr_rep[j]=temp;                    
+                }
+            }
+        }
+    }
     for (var i = 0; i < tamanio; i++) {
         if (jhg_arr[i] < 10) {
             console.log('0'+jhg_arr[i]+' -- '+jhg_arr_rep[i]);
