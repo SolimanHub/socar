@@ -5,8 +5,8 @@ Agregar orden en los arreglos de datos
 console.time('tiempo_en_ejecucion');
 
 var derrotas_permitidas=30;
-var limite=20000; //cantidad de victorias maxima
-var apuesta_inicial = 0.00000100; // 0.00000100 000004
+var limite=2000000; //cantidad de victorias maxima
+var apuesta_inicial = 0.000002; // 0.00000100 000004
 
 var tasa_refresco=50; //actualiza el log de datos cada n jugadas
 var victorias = 0; //contador de victorias
@@ -16,7 +16,6 @@ var jhg_arr = [];
 var jhg_arr_rep = [];
 var tamanio=0;
 
-var bloqueo = 6;
 clear();
 
 Roll_HiLo_Dice_a_mod();
@@ -89,15 +88,11 @@ function Roll_HiLo_Dice_a_mod() {
                     }
                     jhg=1;
                 } else {
-                    if (jhg<= bloqueo) {
-                        // aqui no pasa nada, se mira feo pero funciona
-                    } else {
-                        if(jhg>derrotas_permitidas){
-                            //console.log("numero critico de derrotas alcanzado, retorno al valor seguro");
-                            monto(1);
-                        }else{
-                            monto(2);
-                        }
+                    if(jhg>derrotas_permitidas){
+                        //console.log("numero critico de derrotas alcanzado, retorno al valor seguro");
+                        monto(1);
+                    }else{
+                        monto(2);
                     }
                     jhg++;
                     if(jhg > mayor_derrota){
@@ -348,7 +343,7 @@ function setAmount(id, auto = false) {
     if (id === 1) {//divicion
 
         var bet_amt = $(selector).val();
-        var burp = bet_amt / 2;
+        var burp = bet_amt / 4;//el valor origuinal en esta linea es 2
 
         if (isNaN(burp) === false) {
 
