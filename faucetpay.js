@@ -4,11 +4,11 @@ Agregar orden en los arreglos de datos
 
 console.time('tiempo_en_ejecucion');
 
-var derrotas_permitidas=30;
+var derrotas_permitidas=14;
 var limite=2000000; //cantidad de victorias maxima
-var apuesta_inicial = 0.000002; // 0.00000100 000004
+var apuesta_inicial = 0.00000001; // 0.00000100 000004
 
-var tasa_refresco=50; //actualiza el log de datos cada n jugadas
+var tasa_refresco=10; //actualiza el log de datos cada n jugadas
 var victorias = 0; //contador de victorias
 var mayor_derrota=0; //registra el numero mayor de derrotas antes de una victoria
 var jhg=1; // jugadas antes de ganar.
@@ -67,7 +67,7 @@ function Roll_HiLo_Dice_a_mod() {
                     $('#roll-number-auto').addClass('green').removeClass('black');
                     monto(3); // 3 retorna al valor minimo
                     victorias++;
-                    if(victorias==limite || jhg==derrotas_permitidas){
+                    if(victorias==limite || jhg>=derrotas_permitidas){
                         /*se dentiene si alcanza el limite
                         o si las jugadas antes de ganar igualan las derrotas permitidas, dado que
                         proximamente las jhg superaran ese limite y se generaran perdidas.

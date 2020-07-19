@@ -13,9 +13,9 @@ def CalculoJugadas(monto,inicio,jugadas):
         jugadas=jugadas+1
         CalculoJugadas(monto,inicio,jugadas)
     else:
-        jugadas=jugadas-1
+        j=jugadas-1
         print(f'jugadas {jugadas}')
-        return(jugadas)
+        return monto
 
 def CalculoInicio(monto,jugadas,inicio):
     CalculoJugadas(monto,inicio,1)
@@ -27,4 +27,4 @@ monto = sys.argv[2]
 
 jugadasCalculadas = CalculoJugadas(float(monto),float(inicio),1)
 
-print(f'Jugadas format {jugadasCalculadas}')
+print(jugadasCalculadas)
