@@ -1,427 +1,486 @@
-/*
-Agregar orden en los arreglos de datos
-*/
+        /*
+        actualizado, primer apuesta se realiza con un minimo de probabilidad de exito
+        */
 
-console.time('tiempo_en_ejecucion');
+        console.time('tiempo_en_ejecucion');
 
-var derrotas_permitidas=14;
-var limite=2000000; //cantidad de victorias maxima
-var apuesta_inicial = 0.00000001; // 0.00000100 000004
+        var derrotas_permitidas=17;
+        var limite=30000; //cantidad de victorias maxima
+        var apuesta_inicial = 0.00001000; // 0.00000100 000004
 
-var tasa_refresco=10; //actualiza el log de datos cada n jugadas
-var victorias = 0; //contador de victorias
-var mayor_derrota=0; //registra el numero mayor de derrotas antes de una victoria
-var jhg=1; // jugadas antes de ganar.
-var jhg_arr = [];
-var jhg_arr_rep = [];
-var tamanio=0;
+        var tasa_refresco=10; //actualiza el log de datos cada n jugadas
+        var victorias = 0; //contador de victorias
+        var mayor_derrota=0; //registra el numero mayor de derrotas antes de una victoria
+        var jhg=1; // jugadas antes de ganar.
+        var jhg_arr = [];
+        var jhg_arr_rep = [];
+        var tamanio=0;
+        var victorias_con_1 =0;
+        var makeidd = makid();
+        var winning =0;
+        var porcentaje_variable1 = "2.02128";
+        var porcentaje_variable2 = "47";
+        /*
+            3.06452 - 31
+            2.02128 - 47
+        */
+        $("input[name='max_rolls']").val(1000000000000000000);
+        clear();
 
-clear();
+        Roll_HiLo_Dice_a_mod();
 
-Roll_HiLo_Dice_a_mod();
+        function Roll_HiLo_Dice_a_mod() {
+            monto(3);
+            var count = 0;
+            $("input[name='hidden_current_base']").val($("input[name='base_bet']").val());
+            $("input[name='rolls_to_play']").val($("input[name='max_rolls']").val());
+            $("button[name='auto_roll']").html('Stop Betting').attr('onclick', 'Stop_HiLO_Dice_a()');
 
-function Roll_HiLo_Dice_a_mod() {
-    monto(3);
-    var count = 0;
-    $("input[name='hidden_current_base']").val($("input[name='base_bet']").val());
-    $("input[name='rolls_to_play']").val($("input[name='max_rolls']").val());
-    $("button[name='auto_roll']").html('Stop Betting').attr('onclick', 'Stop_HiLO_Dice_a()');
+            function performBet_mod() {
+                var prediction = "1";
+                //var client_seed = $("input[name='client_seed']").val();
+                var client_seed = makeidd;
+                var bet_amt = $("input[name='base_bet']").val();
+                var profit = $("input[name='profit_auto']").val();
+                var payout = $("input[name='payout_auto']").val();
+                var winning_chance = $("input[name='winning_chance_auto']").val();
+                var url = "https://faucetpay.io/dice/play";
+                $("button[name='roll_hi']").attr('disabled', 'disabled');
+                $("button[name='roll_lo']").attr('disabled', 'disabled');
 
-    function performBet_mod() {
-        var prediction = "1";
-        var client_seed = $("input[name='client_seed']").val();
-        var bet_amt = $("input[name='base_bet']").val();
-        var profit = $("input[name='profit_auto']").val();
-        var payout = $("input[name='payout_auto']").val();
-        var winning_chance = $("input[name='winning_chance_auto']").val();
-        var url = "https://faucetpay.io/dice/play";
-        $("button[name='roll_hi']").attr('disabled', 'disabled');
-        $("button[name='roll_lo']").attr('disabled', 'disabled');
+                var on_win = $("input[name='onWinRadio']:checked").val();
+                var on_lose = $("input[name='onLoseRadio']:checked").val();
 
-        var on_win = $("input[name='onWinRadio']:checked").val();
-        var on_lose = $("input[name='onLoseRadio']:checked").val();
+                $.post(url, {
 
-        $.post(url, {
+                    play: true,
+                    client_seed: client_seed,
+                    coin: window.coin_selected,
+                    bet_amt: bet_amt,
+                    profit: Pro(bet_amt),
+                    payout: Payout(jhg),
+                    winning_chance: winning,
+                    //winning_chance: winning_chance,
+                    prediction: prediction
 
-            play: true,
-            client_seed: client_seed,
-            coin: window.coin_selected,
-            bet_amt: bet_amt,
-            profit: profit,
-            payout: "2.99968",
-            //payout: payout,
-            winning_chance: "31.67",
-            //winning_chance: winning_chance,
-            prediction: prediction
+                }, function (obj) {
 
-        }, function (obj) {
+                    $("#alertMessageRobot").html("(" + count + ") " + obj.message);
 
-            $("#alertMessageRobot").html("(" + count + ") " + obj.message);
-
-            if (obj.error == 1) {
-                $("input[name='rolls_to_play']").val(0);
-                $('#roll-number-auto').html("XXXX");
-                parar();
-            } else {
-                if (obj.win == 1) {
-                    $('#roll-number-auto').addClass('green').removeClass('black');
-                    monto(3); // 3 retorna al valor minimo
-                    victorias++;
-                    if(victorias==limite || jhg>=derrotas_permitidas){
-                        /*se dentiene si alcanza el limite
-                        o si las jugadas antes de ganar igualan las derrotas permitidas, dado que
-                        proximamente las jhg superaran ese limite y se generaran perdidas.
-                        */
-                        if (jhg == derrotas_permitidas) {
-                            console.log('final de emergencia');
-                        }else{
-                            console.log('final esperado');
-                        }
+                    if (obj.error == 1) {
+                        $("input[name='rolls_to_play']").val(0);
+                        $('#roll-number-auto').html("XXXX");
                         parar();
+                    } else {
+                        if (obj.win == 1) { // si gana
+                            if (Payout(jhg) == "95.00000") { // cuenta las victorias con un 95% de probabilidad de fracaso
+                                victorias_con_1++;
+                            }
+                            $('#roll-number-auto').addClass('green').removeClass('black');
+                            monto(3); // 3 retorna al valor minimo
+                            victorias++;
+                            
+                            if(victorias==limite){
+                                /*se dentiene si alcanza el limite
+                                o si las jugadas antes de ganar igualan las derrotas permitidas, dado que
+                                proximamente las jhg superaran ese limite y se generaran perdidas.
+                                */                                
+                                parar();
+                            }
+
+                            if(jhg_arr.indexOf(jhg) == -1){
+                                jhg_arr.push(jhg); // add a new element (r) to jhg_arr
+                                jhg_arr_rep.push(1);
+                                tamanio++;
+                            }else{
+                                jhg_arr_rep[jhg_arr.indexOf(jhg)] = jhg_arr_rep[jhg_arr.indexOf(jhg)]+1;
+                            }
+                            jhg=1;
+                        } else { // si pierde
+                            if (jhg == 1) {
+                                monto(3);
+                            } else {
+                                monto(2);
+                            }
+                            jhg++;
+                            if(jhg > mayor_derrota){
+                                mayor_derrota=jhg;
+                            }
+                            $('#roll-number-auto').addClass('black').removeClass('green');
+                        }
+                        //$('#roll-number-auto').html(obj.roll);
+
+                        if(victorias==limite){
+                            $('#roll-number-auto').html("¡LISTO!");
+                        }else{
+                            $('#roll-number-auto').html(jhg+">#"+mayor_derrota+"("+victorias+")");
+                        }
+                        if (count%tasa_refresco==0) {
+                            imprimir();
+                        }
+                        $("h4[class='text-center tx-roboto tx-semibold']").html("J"+count+"(V"+victorias+")>#d"+mayor_derrota);
+
+                        $("input[name='server_seed_hash']").val(obj.server_seed_hash);
+
+                        $("#balance").html(obj.balance);
+
+                        $("button[name='roll_hi']").removeAttr('disabled');
+                        $("button[name='roll_lo']").removeAttr('disabled');
+
+                        randClientSeed();
+
+                        if (count < $("input[name='rolls_to_play']").val()) {
+                            setTimeout(function () {
+                                performBet_mod();
+                            }, 75);
+                        } else {
+                            //console.timeEnd("t1");
+                        console.log("mayor # derrotas "+mayor_derrota);
+
+                            Stop_HiLO_Dice_a();
+                        }
                     }
-                    if(jhg_arr.indexOf(jhg) == -1){
-                        jhg_arr.push(jhg); // add a new element (r) to jhg_arr
-                        jhg_arr_rep.push(1);
-                        tamanio++;
-                    }else{
-                        jhg_arr_rep[jhg_arr.indexOf(jhg)] = jhg_arr_rep[jhg_arr.indexOf(jhg)]+1;
-                    }
-                    jhg=1;
-                } else {
-                    if(jhg>derrotas_permitidas){
-                        //console.log("numero critico de derrotas alcanzado, retorno al valor seguro");
-                        monto(1);
-                    }else{
-                        monto(2);
-                    }
-                    jhg++;
-                    if(jhg > mayor_derrota){
-                        mayor_derrota=jhg;
-                    }
-                    $('#roll-number-auto').addClass('black').removeClass('green');
-                }
-                //$('#roll-number-auto').html(obj.roll);
-
-                if(victorias==limite){
-                    $('#roll-number-auto').html("¡LISTO!");
-                }else{
-                    $('#roll-number-auto').html(jhg+">#"+mayor_derrota+"("+victorias+")");
-                }
-                if (count%tasa_refresco==0) {
-                    imprimir();
-                }
-                $("h4[class='text-center tx-roboto tx-semibold']").html("J"+count+"(V"+victorias+")>#d"+mayor_derrota);
-
-                $("input[name='server_seed_hash']").val(obj.server_seed_hash);
-
-                $("#balance").html(obj.balance);
-
-                $("button[name='roll_hi']").removeAttr('disabled');
-                $("button[name='roll_lo']").removeAttr('disabled');
-
-                randClientSeed();
-
-                if (count < $("input[name='rolls_to_play']").val()) {
-                    setTimeout(function () {
-                        performBet_mod();
-                    }, 75);
-                } else {
-                    //console.timeEnd("t1");
-                console.log("mayor # derrotas "+mayor_derrota);
-
-                    Stop_HiLO_Dice_a();
-                }
+                });
+                count++;
             }
-        });
-        count++;
-    }
-    performBet_mod();
-} // fin funcion roll_hilo_dice
+            performBet_mod();
+        } // fin funcion roll_hilo_dice
 
-function Dice_CalculateAmounts(id, auto = false) {
+        function Dice_CalculateAmounts(id, auto = false) {
 
-    if (auto === true) {
+            if (auto === true) {
 
-        var bet_amt = $("input[name='base_bet']").val();
-        var payout = $("input[name='payout_auto']").val();
-        var winning_chance = $("input[name='winning_chance_auto']").val();
+                var bet_amt = $("input[name='base_bet']").val();
+                var payout = $("input[name='payout_auto']").val();
+                var winning_chance = $("input[name='winning_chance_auto']").val();
 
-    } else {
+            } else {
 
-        var bet_amt = $("input[name='bet_amount']").val();
-        var payout = $("input[name='payout_manual']").val();
-        var winning_chance = $("input[name='winning_chance_manual']").val();
+                var bet_amt = $("input[name='bet_amount']").val();
+                var payout = $("input[name='payout_manual']").val();
+                var winning_chance = $("input[name='winning_chance_manual']").val();
 
-    }
+            }
 
-    if (id === 1) {
+            if (id === 1) {
 
-        if (bet_amt < 0.00000001) {
-            setAmount(3, auto);
-            Dice_CalculateAmounts(1, auto);
-            bet_amt = 0.00000001;
+                if (bet_amt < 0.00000001) {
+                    setAmount(3, auto);
+                    Dice_CalculateAmounts(1, auto);
+                    bet_amt = 0.00000001;
+                }
+
+                if (isNaN(bet_amt) === false) {
+
+                    var cal = payout * 100;
+                    var cal = cal / 100 * bet_amt;
+                    var cal = parseInt((cal * 100000000)) / 100000000;
+                    var cal = cal - bet_amt;
+
+                    if (auto === true) {
+                        $("#profit_auto").val(parseFloat(cal).toFixed(8));
+                    } else {
+                        $("#profit_manual").html(parseFloat(cal).toFixed(8));
+                    }
+
+                } else {
+
+                    if (auto === true) {
+
+                        $("input[name='base_amount']").val((0).toFixed(8));
+                        $("#profit_auto").val(parseFloat(0).toFixed(8));
+
+                    } else {
+
+                        $("input[name='bet_amount']").val((0).toFixed(8));
+                        $("#profit_manual").html(parseFloat(0).toFixed(8));
+
+                    }
+
+                }
+
+            } else if (id === 3) {
+
+                if (isNaN(payout) === false) {
+
+                    var floatVar = parseFloat(payout);
+                    var cal_pre = (9500 / floatVar);
+                    var cal = (cal_pre / 100).toFixed(2);
+
+                    if (auto === true) {
+                        $("input[name='winning_chance_auto']").val(cal);
+                    } else {
+                        $("input[name='winning_chance_manual']").val(cal);
+                    }
+
+                } else {
+
+                    if (auto === true) {
+
+                        $("input[name='payout_auto']").val('1.01');
+                        $("input[name='winning_chance_auto']").val('94.00');
+
+                    } else {
+
+                        $("input[name='payout_manual']").val('1.01');
+                        $("input[name='winning_chance_manual']").val('94.00');
+
+                    }
+
+                }
+
+                Dice_CalculateAmounts(1, auto);
+
+            } else if (id === 4) {
+
+                if (isNaN(winning_chance) === false) {
+
+                    var winning_chance = parseFloat(winning_chance).toFixed(2);
+                    var cal = 95 / winning_chance;
+
+                    if (auto === true) {
+
+                        $("input[name='winning_chance_auto']").val(winning_chance);
+                        $("input[name='payout_auto']").val((cal).toFixed(5));
+
+                    } else {
+
+                        $("input[name='winning_chance_manual']").val(winning_chance);
+                        $("input[name='payout_manual']").val((cal).toFixed(5));
+
+                    }
+
+                } else {
+
+                    if (auto === true) {
+
+                        $("input[name='payout_auto']").val('1.01064');
+                        $("input[name='winning_chance_auto']").val('94.00');
+
+                    } else {
+
+                        $("input[name='payout_manual']").val('1.01064');
+                        $("input[name='winning_chance_manual']").val('94.00');
+
+                    }
+
+                }
+
+                Dice_CalculateAmounts(1, auto);
+
+            } else if (id === 5) {
+
+                if (payout < 1.01064) {
+
+                    if (auto === true) {
+                        $("input[name='payout_auto']").val('1.01064');
+                    } else {
+                        $("input[name='payout_manual']").val('1.01064');
+                    }
+
+                }
+
+                if (payout > 9500.00) {
+
+                    if (auto === true) {
+                        $("input[name='payout_auto']").val('9500');
+                    } else {
+                        $("input[name='payout_manual']").val('9500');
+                    }
+
+                }
+
+                if (winning_chance < 0.01) {
+
+                    if (auto === true) {
+                        $("input[name='winning_chance_auto']").val('0.01');
+                    } else {
+                        $("input[name='winning_chance_manual']").val('0.01');
+                    }
+
+                }
+
+                if (winning_chance > 94.00) {
+
+                    if (auto === true) {
+                        $("input[name='winning_chance_auto']").val('94.00');
+                    } else {
+                        $("input[name='winning_chance_manual']").val('94.00');
+                    }
+
+                }
+
+                Dice_CalculateAmounts(1, auto);
+                Dice_CalculateAmounts(4, auto);
+                Dice_CalculateAmounts(6, auto);
+
+            } else if (id === 6) {
+
+                winning_chance = parseFloat(winning_chance).toFixed(2);
+
+                var cal = winning_chance;
+                cal = cal * 100;
+
+                if (auto === true) {
+
+                    $("input[name='payout']").val(parseFloat(payout).toFixed(5));
+                    $("#high_auto").html(Math.round(9999 - cal));
+                    $("#low_auto").html(Math.round(cal));
+
+                } else {
+
+                    $("input[name='payout']").val(parseFloat(payout).toFixed(5));
+                    $("#high_manual").html(Math.round(9999 - cal));
+                    $("#low_manual").html(Math.round(cal));
+                }
+
+            }
+
+        } //fin de la funcion dice calculations
+
+        function setAmount(id, auto = false) {
+
+            let selector;
+
+            if (auto === true) {
+                selector = "input[name='base_bet']";
+            } else {
+                selector = "input[name='bet_amount']";
+            }
+
+            if (id === 1) {//divicion
+
+                var bet_amt = $(selector).val();
+                var burp = bet_amt / 4;//el valor origuinal en esta linea es 2
+
+                if (isNaN(burp) === false) {
+
+                    $(selector).val(burp.toFixed(8));
+
+                } else {
+
+                    $(selector).val((0).toFixed(8));
+
+                }
+
+            } else if (id === 2) {//doble
+
+                var bet_amt = $(selector).val();
+                var burp = bet_amt * 2;
+
+                if (isNaN(burp) === false) {
+
+                    $(selector).val(burp.toFixed(8));
+
+                } else {
+
+                    $(selector).val((0).toFixed(8));
+
+                }
+
+            } else if (id === 3) {//minimo
+                //$(selector).val((0.00000001).toFixed(8));
+                $(selector).val((apuesta_inicial).toFixed(8));
+            } else {
+                var balance = $("#balance").html();
+                $(selector).val(parseFloat(balance).toFixed(8));
+            }
+
+            Dice_CalculateAmounts(1);
+
         }
 
-        if (isNaN(bet_amt) === false) {
+        function parar() {
+            imprimir();
+            console.timeEnd("tiempo_en_ejecucion");
+            Stop_HiLO_Dice_a();
+        }
 
-            var cal = payout * 100;
+        function monto(id) {
+            setAmount(id,true); // apuesta minima
+            Dice_CalculateAmounts(1, true); // actualiza el profit
+        }
+
+        function imprimir() {
+            console.clear();
+            var nJ =0;
+            var orden =0;
+            while(orden<tamanio){
+                orden++;
+                for(var i=0;i<tamanio;i++){
+                    var temp=0;
+                    var j=i+1;
+                    if(i<tamanio-1){
+                        if(jhg_arr[j]<jhg_arr[i]){
+                            temp=jhg_arr[i];
+                            jhg_arr[i]=jhg_arr[j];
+                            jhg_arr[j]=temp;
+
+                            temp=jhg_arr_rep[i];
+                            jhg_arr_rep[i]=jhg_arr_rep[j];
+                            jhg_arr_rep[j]=temp;                    
+                        }
+                    }
+                }
+            }
+            for (var i = 0; i < tamanio; i++) {
+                if (jhg_arr[i] < 10) {
+                    console.log('0'+jhg_arr[i]+' -- '+jhg_arr_rep[i]);
+                } else {
+                    console.log(jhg_arr[i]+' -- '+jhg_arr_rep[i]);
+                }
+                nJ = nJ+jhg_arr_rep[i];
+            }
+            console.log('numero de jugadas '+nJ);
+            console.log('victorias_con_1:'+victorias_con_1)
+        }
+
+        function Payout(arg) { //arg es jugadas antes de ganar
+            var pay =0;
+            switch (arg) {
+              case 1:
+                pay = "95.00000"; //1
+                winning = "1.00"
+                break;
+              case 2:
+                pay = "95.00000"; //1              
+                //pay = "3.06452"; //31                
+                winning = "1.00"
+                break;
+            case derrotas_permitidas-1:
+                pay = "1.72727";        //55 
+                winning = "55.00"       
+                break;
+            case derrotas_permitidas:
+                pay = "1.58333";               //55 
+                winning = "60.00"
+                break;
+              default:
+                pay=porcentaje_variable1; //47
+                winning = porcentaje_variable2;
+                break;
+            }           
+            //console.log(winning);
+            return pay;
+         } 
+
+         function Pro(bet_amt) {
+            var cal = Payout(jhg) * 100;
             var cal = cal / 100 * bet_amt;
             var cal = parseInt((cal * 100000000)) / 100000000;
             var cal = cal - bet_amt;
 
-            if (auto === true) {
-                $("#profit_auto").val(parseFloat(cal).toFixed(8));
-            } else {
-                $("#profit_manual").html(parseFloat(cal).toFixed(8));
-            }
+            return parseFloat(cal).toFixed(8);
+         }
 
-        } else {
+         function makid() {
 
-            if (auto === true) {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-                $("input[name='base_amount']").val((0).toFixed(8));
-                $("#profit_auto").val(parseFloat(0).toFixed(8));
+            for (var i = 0; i < 19; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
 
-            } else {
-
-                $("input[name='bet_amount']").val((0).toFixed(8));
-                $("#profit_manual").html(parseFloat(0).toFixed(8));
-
-            }
+            return text;
 
         }
-
-    } else if (id === 3) {
-
-        if (isNaN(payout) === false) {
-
-            var floatVar = parseFloat(payout);
-            var cal_pre = (9500 / floatVar);
-            var cal = (cal_pre / 100).toFixed(2);
-
-            if (auto === true) {
-                $("input[name='winning_chance_auto']").val(cal);
-            } else {
-                $("input[name='winning_chance_manual']").val(cal);
-            }
-
-        } else {
-
-            if (auto === true) {
-
-                $("input[name='payout_auto']").val('1.01');
-                $("input[name='winning_chance_auto']").val('94.00');
-
-            } else {
-
-                $("input[name='payout_manual']").val('1.01');
-                $("input[name='winning_chance_manual']").val('94.00');
-
-            }
-
-        }
-
-        Dice_CalculateAmounts(1, auto);
-
-    } else if (id === 4) {
-
-        if (isNaN(winning_chance) === false) {
-
-            var winning_chance = parseFloat(winning_chance).toFixed(2);
-            var cal = 95 / winning_chance;
-
-            if (auto === true) {
-
-                $("input[name='winning_chance_auto']").val(winning_chance);
-                $("input[name='payout_auto']").val((cal).toFixed(5));
-
-            } else {
-
-                $("input[name='winning_chance_manual']").val(winning_chance);
-                $("input[name='payout_manual']").val((cal).toFixed(5));
-
-            }
-
-        } else {
-
-            if (auto === true) {
-
-                $("input[name='payout_auto']").val('1.01064');
-                $("input[name='winning_chance_auto']").val('94.00');
-
-            } else {
-
-                $("input[name='payout_manual']").val('1.01064');
-                $("input[name='winning_chance_manual']").val('94.00');
-
-            }
-
-        }
-
-        Dice_CalculateAmounts(1, auto);
-
-    } else if (id === 5) {
-
-        if (payout < 1.01064) {
-
-            if (auto === true) {
-                $("input[name='payout_auto']").val('1.01064');
-            } else {
-                $("input[name='payout_manual']").val('1.01064');
-            }
-
-        }
-
-        if (payout > 9500.00) {
-
-            if (auto === true) {
-                $("input[name='payout_auto']").val('9500');
-            } else {
-                $("input[name='payout_manual']").val('9500');
-            }
-
-        }
-
-        if (winning_chance < 0.01) {
-
-            if (auto === true) {
-                $("input[name='winning_chance_auto']").val('0.01');
-            } else {
-                $("input[name='winning_chance_manual']").val('0.01');
-            }
-
-        }
-
-        if (winning_chance > 94.00) {
-
-            if (auto === true) {
-                $("input[name='winning_chance_auto']").val('94.00');
-            } else {
-                $("input[name='winning_chance_manual']").val('94.00');
-            }
-
-        }
-
-        Dice_CalculateAmounts(1, auto);
-        Dice_CalculateAmounts(4, auto);
-        Dice_CalculateAmounts(6, auto);
-
-    } else if (id === 6) {
-
-        winning_chance = parseFloat(winning_chance).toFixed(2);
-
-        var cal = winning_chance;
-        cal = cal * 100;
-
-        if (auto === true) {
-
-            $("input[name='payout']").val(parseFloat(payout).toFixed(5));
-            $("#high_auto").html(Math.round(9999 - cal));
-            $("#low_auto").html(Math.round(cal));
-
-        } else {
-
-            $("input[name='payout']").val(parseFloat(payout).toFixed(5));
-            $("#high_manual").html(Math.round(9999 - cal));
-            $("#low_manual").html(Math.round(cal));
-        }
-
-    }
-
-} //fin de la funcion dice calculations
-
-function setAmount(id, auto = false) {
-
-    let selector;
-
-    if (auto === true) {
-        selector = "input[name='base_bet']";
-    } else {
-        selector = "input[name='bet_amount']";
-    }
-
-    if (id === 1) {//divicion
-
-        var bet_amt = $(selector).val();
-        var burp = bet_amt / 4;//el valor origuinal en esta linea es 2
-
-        if (isNaN(burp) === false) {
-
-            $(selector).val(burp.toFixed(8));
-
-        } else {
-
-            $(selector).val((0).toFixed(8));
-
-        }
-
-    } else if (id === 2) {//doble
-
-        var bet_amt = $(selector).val();
-        var burp = bet_amt * 2;
-
-        if (isNaN(burp) === false) {
-
-            $(selector).val(burp.toFixed(8));
-
-        } else {
-
-            $(selector).val((0).toFixed(8));
-
-        }
-
-    } else if (id === 3) {//minimo
-        //$(selector).val((0.00000001).toFixed(8));
-        $(selector).val((apuesta_inicial).toFixed(8));
-    } else {
-        var balance = $("#balance").html();
-        $(selector).val(parseFloat(balance).toFixed(8));
-    }
-
-    Dice_CalculateAmounts(1);
-
-}
-
-function parar() {
-    imprimir();
-    console.timeEnd("tiempo_en_ejecucion");
-    Stop_HiLO_Dice_a();
-}
-
-function monto(id) {
-    setAmount(id,true); // apuesta minima
-    Dice_CalculateAmounts(1, true); // actualiza el profit
-}
-
-function imprimir() {
-    console.clear();
-    var nJ =0;
-    var orden =0;
-    while(orden<tamanio){
-        orden++;
-        for(var i=0;i<tamanio;i++){
-            var temp=0;
-            var j=i+1;
-            if(i<tamanio-1){
-                if(jhg_arr[j]<jhg_arr[i]){
-                    temp=jhg_arr[i];
-                    jhg_arr[i]=jhg_arr[j];
-                    jhg_arr[j]=temp;
-
-                    temp=jhg_arr_rep[i];
-                    jhg_arr_rep[i]=jhg_arr_rep[j];
-                    jhg_arr_rep[j]=temp;                    
-                }
-            }
-        }
-    }
-    for (var i = 0; i < tamanio; i++) {
-        if (jhg_arr[i] < 10) {
-            console.log('0'+jhg_arr[i]+' -- '+jhg_arr_rep[i]);
-        } else {
-            console.log(jhg_arr[i]+' -- '+jhg_arr_rep[i]);
-        }
-        nJ = nJ+jhg_arr_rep[i];
-    }
-    console.log('numero de jugadas '+nJ);
-}
