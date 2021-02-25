@@ -1,10 +1,10 @@
 // Made by: Crypto Inc. Technology
 
 //Nota
-//Usar un valor mayor al minimo que necesitamos para comenzar los calculos.
+//No esta funcionando de la manera esperada la primer victoria 
 
 var maximum_rolls = 10; // Maximum Number of Rolls
-var jugadas_aceptadas = 22;
+var jugadas_aceptadas = 23;
 
 var current_roll = 0; // Current Roll Number (0)            Contador de jugadas
 var net_profit = 0;
@@ -22,15 +22,9 @@ var min_de_cripto = 0.00001000;
 $("#console-log").html("<b>Crypto Inc Start Script</b>");
 
 function main() {
-
-    //var basebet = parseFloat(mybet).toFixed(8);
-    //var ggs = Math.pow(2, ops);
-   //var baset = parseFloat(basebet * ggs).toFixed(8);
-    //var bet_amount = (baset).toString();
-    //var winning_chance = validateWinningChance(Math.floor(Math.random() * (wcmax - wcmin + 1)) + wcmin); // valor ramdom entre 10 y 70
+    console.log("se repite");
     var payout = getPayoutFromWinningChance(winning_chance);
     var profit = getProfit(bet_amount, payout);
-    //var prediction = Math.floor((Math.random() * 1));
 
     if (current_roll === 0) {
         resetGraph();
@@ -51,6 +45,7 @@ function main() {
             if (resp.win === 1) { // si gana
                 victorias++; 
                 if (primer_ejecucion && victorias ==1){
+                    console.log("primera victoria");
                     primer_ejecucion = false;
                     bet_amount = Jugadas(bet_amount, resp.balance, jugadas_aceptadas);
                 }
@@ -67,11 +62,6 @@ function main() {
             }
 
             if (resp.win === 0) { // si pierde
-                if (jhg > 2) {
-                    winning_chance = "47.00";
-                }else{
-                    winning_chance = "1.00";
-                }
                 bet_amount = monto(2, bet_amount);
                 net_profit = parseFloat(net_profit - bet_amount).toFixed(8);
                 llgs = "LOSE";

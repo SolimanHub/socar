@@ -4,7 +4,7 @@
 
             //console.time('tiempo_en_ejecucion');
 
-            var jugadas_aceptadas=21;
+            var jugadas_aceptadas=23;
             var limite=30000; //cantidad de victorias maxima
             var apuesta_inicial = 0.00001000; // 0.00000100 000004
 
