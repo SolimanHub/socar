@@ -46,12 +46,13 @@
                 function performBet_mod() {
                     if (primer_ejecucion && victorias ==1){
                         primer_ejecucion = false;
-                        Jugadas(apuesta_inicial, balance, 1);
+                        //Jugadas(apuesta_inicial, balance, 1);
+                        apuesta_inicial = Apuesta(apuesta_inicial, balance, jugadas_aceptadas); 
                     }
                     var client_seed = makeidd;
-                    var profit = $("input[name='profit_auto']").val();
-                    var payout = $("input[name='payout_auto']").val();
-                    var winning_chance = $("input[name='winning_chance_auto']").val();
+                    //var profit = $("input[name='profit_auto']").val();
+                    //var payout = $("input[name='payout_auto']").val();
+                    //var winning_chance = $("input[name='winning_chance_auto']").val();
                     var url = "https://faucetpay.io/dice/play";
                     $("button[name='roll_hi']").attr('disabled', 'disabled');
                     $("button[name='roll_lo']").attr('disabled', 'disabled');
@@ -86,7 +87,8 @@
                                 balance = parseFloat(obj.balance);                                
                                 if (victorias%100==0) {
                                     apuesta_inicial = apuesta_inicial -  0.00000100;
-                                    Jugadas(apuesta_inicial, balance, 1); 
+                                    //Jugadas(apuesta_inicial, balance, 1); 
+                                    apuesta_inicial = Apuesta(apuesta_inicial, balance, jugadas_aceptadas); 
                                 }
                                 if(victorias==limite){
                                     /*se dentiene si alcanza el limite
@@ -95,7 +97,6 @@
                                     */                                
                                     parar();
                                 }
-                                
 
                                 if(jhg_arr.indexOf(jhg) == -1){
                                     jhg_arr.push(jhg); // add a new element (r) to jhg_arr
@@ -245,44 +246,15 @@
                 return text;
             }
 
-            function Jugadas(apuesta_inicial, balance, jugadas){// determina el valor de jugadas posibles
-                  if(apuesta_inicial < balance){
-                    Jugadas(apuesta_inicial*2, balance-apuesta_inicial, jugadas+1);
-                  }
-                  else{
-                    jugadas_posibles = jugadas-1;
-                    Igualador();
-                  }
-            }
-
-            function JugadasFin(apuesta_inicial, balance, jugadas){
-              if(apuesta_inicial < balance){
-                JugadasFin(apuesta_inicial*2, balance-apuesta_inicial, jugadas+1);
-              }
-              else{
-                jugadas_posibles = jugadas-1;
-              }
-            }
-
-            function Igualador(){
-              if (jugadas_posibles > jugadas_aceptadas){
-                apuesta_inicial = apuesta_inicial + 0.00001;
-                Jugadas(apuesta_inicial, balance, 1);
-              }
-              if (jugadas_posibles < jugadas_aceptadas){
-                apuesta_inicial = apuesta_inicial - 0.00000001;  
-                Jugadas(apuesta_inicial, balance, 1);
-              }
-              if(jugadas_posibles == jugadas_aceptadas ){
-                determinador();
-              }
-            }
-
-            function determinador(){    
-              while(jugadas_posibles == jugadas_aceptadas){
-                apuesta_inicial = apuesta_inicial + 0.00000001;
-                JugadasFin(apuesta_inicial,balance,1);    
-              }
-              apuesta_inicial = apuesta_inicial - 0.00000001;
-              apuesta_inicial = parseFloat(apuesta_inicial).toFixed(8);
+            function Apuesta(apuesta_inicial, balance, jugadas){// determina el valor de jugadas posibles
+                var controlador = 1;
+                for(let i = 0; i<jugadas-1; i++){
+                  controlador = controlador * 2;
+                }
+                while(apuesta_inicial*2*controlador + apuesta_inicial < balance){
+                  apuesta_inicial = apuesta_inicial + 0.00000001;
+                }
+                apuesta_inicial = apuesta_inicial - 0.00000001;
+                apuesta_inicial = parseFloat(apuesta_inicial).toFixed(8);
+                return apuesta_inicial;
             }
