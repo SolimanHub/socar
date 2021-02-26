@@ -1,17 +1,18 @@
 // Made by: Crypto Inc. Technology
 
-//Nota
-//No esta funcionando de la manera esperada la primer victoria 
+// Nota
+// Agregar intercambiador entre un wc alto y uno medio
+//
 
 var maximum_rolls = 10; // Maximum Number of Rolls
-var jugadas_aceptadas = 23;
+var jugadas_aceptadas = 19;
 
 var current_roll = 0; // Current Roll Number (0)            Contador de jugadas
 var net_profit = 0;
 var client_seed = generateRandomClientSeed();
 var prediction = "1";
 var bet_amount = 0.00001000;
-var winning_chance = "47.00";
+var winning_chance = "45.00";
 
 var victorias = 0;
 var primer_ejecucion = true;
@@ -49,28 +50,28 @@ function main() {
                     primer_ejecucion = false;
                     bet_amount = Jugadas(bet_amount, resp.balance, jugadas_aceptadas);
                 }
-                bet_amount = monto(3, bet_amount);
                 net_profit = math.add(net_profit, profit).toFixed(8);
                 llgs = "WIN";
                 plotGraphData(window.chart, current_roll, net_profit * 100000000);
-                $("#console-log").append("<br>" + "Status : " + llgs + " || Max_derr : " + mayor_derrota + " || Balance Now : " + resp.balance + " || WC: " + winning_chance).scrollTop($("#console-log")[0].scrollHeight);
+                $("#console-log").append("<br>"+ bet_amount + " Status : " + llgs + " || Max_derr : " + mayor_derrota + " || Balance Now : " + resp.balance + " || WC: " + winning_chance).scrollTop($("#console-log")[0].scrollHeight);
                 if (victorias%100 == 0) {
                     bet_amount = Jugadas(bet_amount, resp.balance, jugadas_aceptadas); 
                 }
                 jhg=1;
+                bet_amount = monto(3, bet_amount);
                 //stopScript();
             }
 
             if (resp.win === 0) { // si pierde
-                bet_amount = monto(2, bet_amount);
                 net_profit = parseFloat(net_profit - bet_amount).toFixed(8);
                 llgs = "LOSE";
                 plotGraphData(window.chart, current_roll, net_profit * 100000000);
                 if(jhg > mayor_derrota){
                     mayor_derrota=jhg;
                 }
-                $("#console-log").append("<br>" + "Status : " + llgs + " || Max_derr : " + mayor_derrota + " || Balance Now : " + resp.balance + " || WC: " + winning_chance).scrollTop($("#console-log")[0].scrollHeight);
+                $("#console-log").append("<br>"+ bet_amount + " Status : " + llgs + " || Max_derr : " + mayor_derrota + " || Balance Now : " + resp.balance + " || WC: " + winning_chance).scrollTop($("#console-log")[0].scrollHeight);
                 jhg++;
+                bet_amount = monto(2, bet_amount);
             }
         }
 
@@ -97,4 +98,12 @@ function monto(id, valor_creciente) {
     } else {
         return valor_creciente * 2;
     }
+}
+
+function wc(j){
+  if(j < 2){
+    winning_chance = "45.00";
+  }else{
+    winning_chance = "47.00";
+  }
 }
