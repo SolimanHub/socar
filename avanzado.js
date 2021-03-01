@@ -23,14 +23,14 @@ var min_de_cripto = 0.00001000;
 $("#console-log").html("<b>Crypto Inc Start Script</b>");
 
 function main() {
-    console.log("se repite");
     var payout = getPayoutFromWinningChance(winning_chance);
     var profit = getProfit(bet_amount, payout);
 
     if (current_roll === 0) {
         resetGraph();
     }
-
+    
+    console.log("datos de mierda enviados: " + bet_amount + ' ' + winning_chance);
     placeBet(bet_amount, profit, payout, winning_chance, client_seed, prediction, function (resp) {
 
         if (resp !== false) {
@@ -44,32 +44,30 @@ function main() {
             }
 
             if (resp.win === 1) { // si gana
-                victorias++; 
-                if (primer_ejecucion && victorias ==1){
-                    console.log("primera victoria");
-                    primer_ejecucion = false;
-                    bet_amount = Jugadas(bet_amount, resp.balance, jugadas_aceptadas);
-                }
                 net_profit = math.add(net_profit, profit).toFixed(8);
                 llgs = "WIN";
                 plotGraphData(window.chart, current_roll, net_profit * 100000000);
-                $("#console-log").append("<br>"+ bet_amount + " Status : " + llgs + " || Max_derr : " + mayor_derrota + " || Balance Now : " + resp.balance + " || WC: " + winning_chance).scrollTop($("#console-log")[0].scrollHeight);
+                $("#console-log").append("<br>" + current_roll + ' || ' + llgs + ' || ' + bet_amount + ' || ' + winning_chance).scrollTop($("#console-log")[0].scrollHeight);
+                victorias++; 
                 if (victorias%100 == 0) {
                     bet_amount = Jugadas(bet_amount, resp.balance, jugadas_aceptadas); 
                 }
                 jhg=1;
                 bet_amount = monto(3, bet_amount);
-                //stopScript();
+                if (primer_ejecucion){
+                    primer_ejecucion = false;
+                    bet_amount = Jugadas(bet_amount, resp.balance, jugadas_aceptadas);
+                }
             }
 
             if (resp.win === 0) { // si pierde
                 net_profit = parseFloat(net_profit - bet_amount).toFixed(8);
                 llgs = "LOSE";
                 plotGraphData(window.chart, current_roll, net_profit * 100000000);
+                $("#console-log").append("<br>" + current_roll + ' || ' + llgs + ' || ' + bet_amount + ' || ' + winning_chance).scrollTop($("#console-log")[0].scrollHeight);
                 if(jhg > mayor_derrota){
                     mayor_derrota=jhg;
                 }
-                $("#console-log").append("<br>"+ bet_amount + " Status : " + llgs + " || Max_derr : " + mayor_derrota + " || Balance Now : " + resp.balance + " || WC: " + winning_chance).scrollTop($("#console-log")[0].scrollHeight);
                 jhg++;
                 bet_amount = monto(2, bet_amount);
             }
